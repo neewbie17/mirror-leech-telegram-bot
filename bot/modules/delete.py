@@ -14,7 +14,7 @@ def deletefile(update, context):
     if len(context.args) == 1:
         link = context.args[0]
     elif reply_to:
-        link = reply_to.text
+        link = reply_to.text.split(maxsplit=1)[0].strip()
     else:
         link = ''
     if is_gdrive_link(link):
@@ -26,5 +26,8 @@ def deletefile(update, context):
     reply_message = sendMessage(msg, context.bot, update.message)
     Thread(target=auto_delete_message, args=(context.bot, update.message, reply_message)).start()
 
-delete_handler = CommandHandler(command=BotCommands.DeleteCommand, callback=deletefile, filters=CustomFilters.owner_filter | CustomFilters.sudo_user, run_async=True)
+
+delete_handler = CommandHandler(BotCommands.DeleteCommand, deletefile,
+                                filters=CustomFilters.owner_filter | CustomFilters.sudo_user, run_async=True)
+
 dispatcher.add_handler(delete_handler)
